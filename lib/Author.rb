@@ -35,4 +35,12 @@ class Author
     new_author.save
     new_author
   end
+
+  def self.search(user_input)
+    results = DB.exec("SELECT book.title FROM author JOIN book_author ON (author.id = book_author.author_id) JOIN book ON (book_author.book_id = book.id) WHERE author.name LIKE '%#{user_input}%';")
+    results.each do |result|
+      puts "#{result['title']}"
+      puts "\n"
+    end
+  end
 end

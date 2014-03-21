@@ -44,16 +44,26 @@ class Book
     results.each do |author|
       puts "Author: #{author['name']}"
     end
+    copies = DB.exec("SELECT * FROM copies WHERE book_id = #{@id}")
+    puts "Number of Copies Available: #{copies.count.to_i}"
+    puts "\n"
   end
 
-  def edit_title
-  user_input = gets.chomp
+  def edit_title(user_input)
   @title = user_input
   DB.exec("UPDATE book SET title = '#{@title}' WHERE id = #{@id};")
   end
 
   def remove_author(author_name)
-    author = DB.exec("SELECT author_id FROM book_author JOIN author on (author.id = book_author.author_id) WHERE book_id = #{@id} AND author.name = '#{author_name}';")
+    author = DB.exec("SELECT author_id FROM book_author JOIN author ON (author.id = book_author.author_id) WHERE book_id = #{@id} AND author.name = '#{author_name}';")
     DB.exec("DELETE FROM book_author WHERE author_id = #{author.first['author_id']} AND book_id = #{@id};")
+  end
+
+  def self.search(user_input)
+    results = DB.exec("SELECT * FROM book WHERE title LIKE '%#{user_input}%';")
+    results.each do |result|
+      puts "#{result['title']}"
+      puts "\n"
+    end
   end
 end
